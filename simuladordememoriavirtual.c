@@ -48,9 +48,52 @@ for (int i = o; i < numero_de_frames; i++){
     frames[i].rbit = 0;         //bit zerado
 }
 
-
+ //FIFO- estrutura auxiliar
+int *fifo_queue = malloc (numero_de_frames * sizeof(int));      //fila circular de frames  
+int fifo_head = 0;
+int fifo_tail = 0;
+fifo_count = 0;        
 int fifo_pointer = 0; // ponteiro fifo
+//CLOCK- ponteiro
 int clock_pointer = 0; //ponteiro clock
+
+//loop principal de acessos
+while (fgets (linha)){
+    int pid;
+    long endereco;
+    int deslocamento = (int) (endereco % tamanho_de_pagina);      //deslocamento
+}
+
+//verificar o hit
+if (pagetables [pindex][page].valid){
+    f = pagetables [pindex][page]. frame;
+    pagetables [pindex][page].rbit = 1;
+    frames[f]. rbit = 1;
+    printf("HIT: página %d (PID %d) já está no Frame %d\n", page, pid, f);
+    continue;
+}
+
+//procurar frame livre
+for (int i = 0; i < numero_de_frames; i++)
+    if (!frames[i].occupied){
+        free_frame = i;
+        break;
+    }
+
+//substituir pagina com fifo
+vitima = fifo_queue[fifo_head];         //escolhe a vitima
+fifo_head = (fifo_head + 1) % numero_de_frames;
+fifo_count --;
+
+frames [vitima] = nova_pagina;
+
+pagetables[pindex][page].valid = 1;
+pagetables[pindex][page].valid = vitima_frame;
+
+fifo_queue [fifo_tail] = vitima.frame;
+fifo_tail = (fifo_tail + 1) % numero_de_frames;
+fifo_count++;
+
 
 //FIFO
  int substituir_fifo(Frame *memoria, int num_frames){
