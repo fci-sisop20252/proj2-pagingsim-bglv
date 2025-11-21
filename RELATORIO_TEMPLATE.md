@@ -6,10 +6,10 @@
 
 ## Integrantes do Grupo
 
-- Nome Completo - Matrícula
-- Nome Completo - Matrícula
-- Nome Completo - Matrícula
-- Nome Completo - Matrícula
+- Luiza marinho de Mesquita - 10438045
+- Beatriz Carvalho Di Palma - 10439477
+- Guilherme Limeira De Souza - 10439777
+- Vinicius Barbosa Pereira Allegretti - 10437502
 
 ---
 
