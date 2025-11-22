@@ -30,11 +30,14 @@ int processo(Fifo *proc, int n, int pid){
     }
     return -1;
 }
-//le o arq de configuracao
-FILE *Fconfiguracao = fopen (argv[2], "rbit");
-if (!fconfiguracao){
-    perror("Erro ao abrir o arquivo de configuração");
-    return 1;
+
+//argv precisa ser ponteiro p acessar a string inserida pelo usuario
+int main(int argc, char *argv[]){
+    if (argc != 4) {
+        printf("Uso: %s <algoritmo> <config> <acessos>\n", argv[0]);
+        printf("algoritmo: fifo | clock\n");
+        return 1;
+    }
 }
 int numero_de_frames = 0;
 int tamanho_de_pagina = 0;
