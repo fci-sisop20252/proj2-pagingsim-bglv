@@ -13,7 +13,7 @@ typedef struct {
 typedef struct {
     int valid;       // 1 se a pag esta na RAM
     int frame;       // indice do frame onde a pag esta
-    int rbit         // bit para o clock
+    int rbit;         // bit para o clock
 } PageTableEntry;
 
 //le o arq de configuracao
