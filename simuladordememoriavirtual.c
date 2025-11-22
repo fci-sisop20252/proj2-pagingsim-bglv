@@ -44,15 +44,16 @@ int main(int argc, char *argv[]){
     char *accesso = argv[3];
 
     FILE *fc = fopen(config, "r");
-    if(!fc) return 1;
+    if (!fc) { perror("abrir config"); return 1; }
 
     int num_quadros, tam_pag, num_proc;
-    fscanf(fc, "%d", &num_quadros);
-    fscanf(fc, "%d", &tam_pag);
-    fscanf(fc, "%d", &num_proc);
+    if (fscanf(fc, "%d", &num_quadros) != 1) { fclose(fc); return 1; }
+    if (fscanf(fc, "%d", &tam_pag) != 1) { fclose(fc); return 1; }
+    if (fscanf(fc, "%d", &num_proc) != 1) { fclose(fc); return 1; }
 
     //cria um vetor p cada processo
     Fifo *proc = malloc(sizeof(Fifo) * num_proc);
+    if (!proc) { fclose(fc); return 1; }
 
     for(int i = 0; i < num_proc; i++){
         int pid, tam_virtual;
@@ -87,10 +88,10 @@ int main(int argc, char *argv[]){
 
     while (fscanf(fa, "%d %d", &pid, &end) == 2) {
 
-        int idx = buscar_processo(procs, num_procs, pid);
+        int idx = processo(proc, num_procs, pid);
         if (idx < 0) continue;
 
-        Processo *p = &procs[idx];
+        Processo *p = &proc[idx];
 
         int pagina = end / tam_pag;
         int desloc = end % tam_pag;
