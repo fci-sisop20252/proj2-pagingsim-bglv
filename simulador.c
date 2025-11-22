@@ -46,7 +46,7 @@ int main(int argc, char *argv[]){
 
     FILE *fc = fopen(config, "r");
     if (!fc) { 
-        perror("ERRO - abrir config\n"); 
+        perror("ERRO - abrir config"); 
         return 1; 
     }
 
@@ -81,13 +81,13 @@ int main(int argc, char *argv[]){
     int topo_livre = num_quadros;
 
     for(int i = 0; i < num_quadros; i++){
-        livres[i] = 1;
+        livres[i] = i;
     }
     int clock = 0, hits = 0, faults = 0, subs = 0;
 
     FILE *fa = fopen(accesso, "r");
     if (!fa) {
-        printf("ERRO - abrir acesso");
+        printf("ERRO - abrir acessos");
         return 1;
     }
 
@@ -99,13 +99,13 @@ int main(int argc, char *argv[]){
 
         Processo *p = &proc[aux];
 
-        int pagina = end / tam_pag;
+        int pag = end / tam_pag;
         int desloc = end % tam_pag;
 
-        printf("PID %d END %d -> pag %d des %d : ", pid, end, pagina, desloc);
+        printf("PID %d END %d -> pag %d des %d : ", pid, end, pag, desloc);
 
-        if (p -> tabela[pagina].atual) {
-            int q = p -> tabela[pagina].frame;
+        if (p -> tabela[pag].atual) {
+            int q = p -> tabela[pag].frame;
             quadros[q].rbit = 1;
             hits++;
             printf("HIT (frame %d)\n", q);
@@ -120,11 +120,11 @@ int main(int argc, char *argv[]){
 
             quadros[q].ocupado = 1;
             quadros[q].pid = pid;
-            quadros[q].pag = pagina;
+            quadros[q].pag = pag;
             quadros[q].rbit = 1;
 
-            p->tabela[pagina].atual = 1;
-            p->tabela[pagina].frame = q;
+            p->tabela[pag].atual = 1;
+            p->tabela[pag].frame = q;
 
             printf("PAGE FAULT (carregado no frame %d)\n", q);
             continue;
@@ -133,9 +133,13 @@ int main(int argc, char *argv[]){
         subs++;
         int vitima;
 
+        static int ponteiro_fifo = 0;
+
         if (strcmp(algoritmo, "fifo") == 0) {
-            vitima = 0;
+            vitima = ponteiro_fifo;
+            ponteiro_fifo = (ponteiro_fifo + 1) % num_quadros;
         }
+
 
         else {
             while (1) {
@@ -156,11 +160,11 @@ int main(int argc, char *argv[]){
         proc[auxv].tabela[pag_v].atual = 0;
 
         quadros[vitima].pid = pid;
-        quadros[vitima].pag = pagina;
+        quadros[vitima].pag = pag;
         quadros[vitima].rbit = 1;
 
-        p->tabela[pagina].atual = 1;
-        p->tabela[pagina].frame = vitima;
+        p->tabela[pag].atual = 1;
+        p->tabela[pag].frame = vitima;
 
         printf("PAGE FAULT (substituiu quadro %d)\n", vitima);
     }
