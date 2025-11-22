@@ -4,18 +4,32 @@
 #define MAX_LINE 256
 
 typedef struct {
+    int atual;       // 1 se a pag esta na RAM
+    int frame;       // indice do frame onde a pag esta
+} EntradaPagina;
+
+typedef struct {
     int pid;        //pagina
-    int page;       // num da pagina
+    int pag;       // num da pagina
     int rbit;       // bit para o clock
     int ocupado;    // 1 se frame estiver ocupado, 0 se livre
 } Frame;
 
-typedef struct {
-    int valid;       // 1 se a pag esta na RAM
-    int frame;       // indice do frame onde a pag esta
-    int rbit;         // bit para o clock
-} PageTableEntry;
+typedef struct{
+    int pid;
+    int num_pag;
+    EntradaPagina *tabela; //vetor da pag virtual
+}Fifo;
 
+//procurar o processo q possui o PID inserido
+int processo(Fifo *proc, int n, int pid){
+    for(int i = 0; i < n; i++){
+        if(proc[i].pid == pid){
+            return i;
+        }
+    }
+    return -1;
+}
 //le o arq de configuracao
 FILE *Fconfiguracao = fopen (argv[2], "rbit");
 if (!fconfiguracao){
