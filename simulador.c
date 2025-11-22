@@ -102,13 +102,13 @@ int main(int argc, char *argv[]){
         int pag = end / tam_pag;
         int desloc = end % tam_pag;
 
-        printf("PID %d END %d -> pag %d des %d : ", pid, end, pag, desloc);
+        printf("Acesso: PID %d, Endereço %d (Página %d, Deslocamento %d) -> ", pid, end, pag, desloc);
 
         if (p -> tabela[pag].atual) {
-            int q = p -> tabela[pag].frame;
-            quadros[q].rbit = 1;
+            int f = p -> tabela[pag].frame;
+            quadros[f].rbit = 1;
             hits++;
-            printf("HIT (frame %d)\n", q);
+            printf("HIT: Página %d (PID %d) já está no Frame %d\n", pag, pid, f);
             continue;
         }
 
@@ -126,7 +126,8 @@ int main(int argc, char *argv[]){
             p->tabela[pag].atual = 1;
             p->tabela[pag].frame = q;
 
-            printf("PAGE FAULT (carregado no frame %d)\n", q);
+            printf("PAGE FAULT -> Página %d (PID %d) alocada no Frame livre %d\n",
+       pag, pid, q);
             continue;
         }
 
@@ -166,15 +167,17 @@ int main(int argc, char *argv[]){
         p->tabela[pag].atual = 1;
         p->tabela[pag].frame = vitima;
 
-        printf("PAGE FAULT (substituiu quadro %d)\n", vitima);
+        printf("PAGE FAULT -> Memória cheia. Página %d (PID %d) (Frame %d) será desalocada. \
+-> Página %d (PID %d) alocada no Frame %d\n", pag_v, pid_v, vitima, pag, pid, vitima);
+
     }
 
     fclose(fa);
 
-    printf("\nResultado: \n");
-    printf("HITs: %d\n", hits);
-    printf("PAGE FAULTs: %d\n", faults);
-    printf("SUBS: %d\n", subs);
+    printf("\n--- Simulação Finalizada (Algoritmo: %s)\n", algoritmo);
+    printf("Total de Acessos: %d\n", hits + faults);
+    printf("Total de Page Faults: %d\n", faults);
+
 
     return 0;
 }
