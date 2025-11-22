@@ -38,95 +38,134 @@ int main(int argc, char *argv[]){
         printf("algoritmo: fifo | clock\n");
         return 1;
     }
-}
-int numero_de_frames = 0;
-int tamanho_de_pagina = 0;
-int numero_de_processos = 0;
 
-fscanf(fconfig, "%d", &numero_de_frames);       // le numero de frames
-fscanf(fconfig, "%d", &tamanho_da_pagina);      // le tamanho da pagina
-fscanf(fconfig, "%d", &numero_de_processos);    // le numero de processos
+    char *algoritmo = argv[1];
+    char *config = argv[2];
+    char *accesso = argv[3];
 
-int pids [MAX_PROCS];       //armazena pid
+    FILE *fc = fopen(config, "r");
+    if(!fc) return 1;
 
-for (int i = 0; i < numero_de_processos; i++){
-    int pid, memsize;
-    int npages = memsize / tamanho_de_pagina;
-    if(memsize % tamanho_de_pagina != 0) npages +=1; // para add uma pag extra se precisar
-}
+    int num_quadros, tam_pag, num_proc;
+    fscanf(fc, "%d", &num_quadros);
+    fscanf(fc, "%d", &tam_pag);
+    fscanf(fc, "%d", &num_proc);
 
+    //cria um vetor p cada processo
+    Fifo *proc = malloc(sizeof(Fifo) * num_proc);
 
-// cria RAM
-Frame *frames = malloc (numero_de_frames * sizeof(Frame));
-for (int i = o; i < numero_de_frames; i++){
-    frames[i].ocupado = 0;      //frame livre
-    frames[i].pid = -1;         //sem pid
-    frames[i].page = -1;        //sem pag
-    frames[i].rbit = 0;         //bit zerado
-}
+    for(int i = 0; i < num_proc; i++){
+        int pid, tam_virtual;
+        fscanf(fc,"%d %d", &pid, &tam_virtual);
 
- //FIFO- estrutura auxiliar
-int *fifo_queue = malloc (numero_de_frames * sizeof(int));      //fila circular de frames  
-int fifo_head = 0;
-int fifo_tail = 0;
-fifo_count = 0;        
-int fifo_pointer = 0; // ponteiro fifo
-//CLOCK- ponteiro
-int clock_pointer = 0; //ponteiro clock
+        proc[i].pid = pid; // guarda pid no processo
+        proc[i].num_pag = (tam_virtual + tam_pag - 1) / tam_pag; //qnts paginas o proc precisa
+        proc[i].tabela = calloc(proc[i].num_pag, sizeof(EntradaPagina)); //cria a tabela de pag do proc
 
-//loop principal de acessos
-while (fgets (linha)){
-    int pid;
-    long endereco;
-    int deslocamento = (int) (endereco % tamanho_de_pagina);      //deslocamento
-}
-
-//verificar o hit
-if (pagetables [pindex][page].valid){
-    f = pagetables [pindex][page]. frame;
-    pagetables [pindex][page].rbit = 1;
-    frames[f]. rbit = 1;
-    printf("HIT: página %d (PID %d) já está no Frame %d\n", page, pid, f);
-    continue;
-}
-
-//procurar frame livre
-for (int i = 0; i < numero_de_frames; i++)
-    if (!frames[i].occupied){
-        free_frame = i;
-        break;
     }
 
-//substituir pagina com fifo
-vitima = fifo_queue[fifo_head];         //escolhe a vitima
-fifo_head = (fifo_head + 1) % numero_de_frames;
-fifo_count --;
+    fclose(fc);
 
-frames [vitima] = nova_pagina;
+    Frame *quadros = calloc(num_quadros, sizeof(Frame));
+    int *livres = malloc(sizeof(int) * num_quadros);
+    int topo_livre = num_quadros;
 
-pagetables[pindex][page].valid = 1;
-pagetables[pindex][page].valid = vitima_frame;
+    for(int i = 0; i < num_quadros; i++){
+        livres[i] = 1;
+    }
+    or (int i = 0; i < num_quadros; i++)
+        livres[i] = i;
 
-fifo_queue [fifo_tail] = vitima.frame;
-fifo_tail = (fifo_tail + 1) % numero_de_frames;
-fifo_count++;
+    int clock = 0;
 
+    int hits = 0, faults = 0, subs = 0;
 
-//FIFO
- int substituir_fifo(Frame *memoria, int num_frames){
-    int vitima = fifo_pointer;
-    fifo_pointer = (fifo_pointer +1) % num_frames
-    return vitima;
- }
-//CLOCK
-int substituir_clock(Frame *memoria, int num_frames){
-    while (1){
-        if (memoria[clock_pointer].rbit == 0){
-            int vitima = clock_pointer;
-            clock_pointer = (clock_pointer + 1) % num_frames;
-            return vitima;
+    FILE *fa = fopen(acc, "r");
+    if (!fa) return 1;
+
+    int pid, end;
+
+    while (fscanf(fa, "%d %d", &pid, &end) == 2) {
+
+        int idx = buscar_processo(procs, num_procs, pid);
+        if (idx < 0) continue;
+
+        Processo *p = &procs[idx];
+
+        int pagina = end / tam_pag;
+        int desloc = end % tam_pag;
+
+        printf("PID %d END %d -> pag %d des %d : ", pid, end, pagina, desloc);
+
+        if (p->tabela[pagina].valid) {
+            int q = p->tabela[pagina].frame;
+            quadros[q].rbit = 1;
+            hits++;
+            printf("HIT (quadro %d)\n", q);
+            continue;
         }
-        memoria [clock_pointer].rbit = 0;
-        clock_pointer = (clock_pointer + 1) % num_frames;
+
+        faults++;
+
+        if (topo_livre > 0) {
+
+            int q = livres[--topo_livre];
+
+            quadros[q].ocupado = 1;
+            quadros[q].pid = pid;
+            quadros[q].pagina = pagina;
+            quadros[q].rbit = 1;
+
+            p->tabela[pagina].valid = 1;
+            p->tabela[pagina].frame = q;
+
+            printf("PAGE FAULT (livre quadro %d)\n", q);
+            continue;
+        }
+
+        subs++;
+
+        int vitima;
+
+        if (strcmp(alg, "fifo") == 0) {
+            vitima = 0;
+        }
+
+        else {
+            while (1) {
+                if (quadros[clock].rbit == 0) {
+                    vitima = clock;
+                    clock = (clock + 1) % num_quadros;
+                    break;
+                }
+                quadros[clock].rbit = 0;
+                clock = (clock + 1) % num_quadros;
+            }
+        }
+
+        int pid_v = quadros[vitima].pid;
+        int pag_v = quadros[vitima].pagina;
+
+        int idxv = buscar_processo(procs, num_procs, pid_v);
+        procs[idxv].tabela[pag_v].valid = 0;
+
+        quadros[vitima].pid = pid;
+        quadros[vitima].pagina = pagina;
+        quadros[vitima].rbit = 1;
+
+        p->tabela[pagina].valid = 1;
+        p->tabela[pagina].frame = vitima;
+
+        printf("PAGE FAULT (substituiu quadro %d)\n", vitima);
     }
+
+    fclose(fa);
+
+    printf("\n=== RESUMO ===\n");
+    printf("HITs: %d\n", hits);
+    printf("PAGE FAULTs: %d\n", faults);
+    printf("SUBSTITUICOES: %d\n", subs);
+
+    return 0;
 }
+
