@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MAX_LINE 256
 
@@ -19,10 +20,10 @@ typedef struct{
     int pid;
     int num_pag;
     EntradaPagina *tabela; //vetor da pag virtual
-}Fifo;
+}Processo;
 
 //procurar o processo q possui o PID inserido
-int processo(Fifo *proc, int n, int pid){
+int buscarProcesso(Processo *proc, int n, int pid){
     for(int i = 0; i < n; i++){
         if(proc[i].pid == pid){
             return i;
@@ -44,15 +45,22 @@ int main(int argc, char *argv[]){
     char *accesso = argv[3];
 
     FILE *fc = fopen(config, "r");
-    if (!fc) { perror("abrir config"); return 1; }
+    if (!fc) { 
+        perror("ERRO - abrir config\n"); 
+        return 1; 
+    }
 
     int num_quadros, tam_pag, num_proc;
     if (fscanf(fc, "%d", &num_quadros) != 1) { fclose(fc); return 1; }
     if (fscanf(fc, "%d", &tam_pag) != 1) { fclose(fc); return 1; }
     if (fscanf(fc, "%d", &num_proc) != 1) { fclose(fc); return 1; }
 
+    // !!!!TESTAR SUB POR!!!!!
+    //int num_quadros, tam_pag, num_procs;
+    //fscanf(fc, "%d %d %d", &num_quadros, &tam_pag, &num_procs);
+
     //cria um vetor p cada processo
-    Fifo *proc = malloc(sizeof(Fifo) * num_proc);
+    Processo *proc = malloc(sizeof(Processo) * num_proc);
     if (!proc) { fclose(fc); return 1; }
 
     for(int i = 0; i < num_proc; i++){
@@ -68,41 +76,39 @@ int main(int argc, char *argv[]){
     fclose(fc);
 
     Frame *quadros = calloc(num_quadros, sizeof(Frame));
+
     int *livres = malloc(sizeof(int) * num_quadros);
     int topo_livre = num_quadros;
 
     for(int i = 0; i < num_quadros; i++){
         livres[i] = 1;
     }
-    or (int i = 0; i < num_quadros; i++)
-        livres[i] = i;
+    int clock = 0, hits = 0, faults = 0, subs = 0;
 
-    int clock = 0;
-
-    int hits = 0, faults = 0, subs = 0;
-
-    FILE *fa = fopen(acc, "r");
-    if (!fa) return 1;
+    FILE *fa = fopen(accesso, "r");
+    if (!fa) {
+        printf("ERRO - abrir acesso");
+        return 1;
+    }
 
     int pid, end;
 
     while (fscanf(fa, "%d %d", &pid, &end) == 2) {
+        int aux = buscarProcesso(proc, num_proc, pid);
+        if (aux < 0) continue;
 
-        int idx = processo(proc, num_procs, pid);
-        if (idx < 0) continue;
-
-        Processo *p = &proc[idx];
+        Processo *p = &proc[aux];
 
         int pagina = end / tam_pag;
         int desloc = end % tam_pag;
 
         printf("PID %d END %d -> pag %d des %d : ", pid, end, pagina, desloc);
 
-        if (p->tabela[pagina].valid) {
-            int q = p->tabela[pagina].frame;
+        if (p -> tabela[pagina].atual) {
+            int q = p -> tabela[pagina].frame;
             quadros[q].rbit = 1;
             hits++;
-            printf("HIT (quadro %d)\n", q);
+            printf("HIT (frame %d)\n", q);
             continue;
         }
 
@@ -114,21 +120,20 @@ int main(int argc, char *argv[]){
 
             quadros[q].ocupado = 1;
             quadros[q].pid = pid;
-            quadros[q].pagina = pagina;
+            quadros[q].pag = pagina;
             quadros[q].rbit = 1;
 
-            p->tabela[pagina].valid = 1;
+            p->tabela[pagina].atual = 1;
             p->tabela[pagina].frame = q;
 
-            printf("PAGE FAULT (livre quadro %d)\n", q);
+            printf("PAGE FAULT (carregado no frame %d)\n", q);
             continue;
         }
 
         subs++;
-
         int vitima;
 
-        if (strcmp(alg, "fifo") == 0) {
+        if (strcmp(algoritmo, "fifo") == 0) {
             vitima = 0;
         }
 
@@ -145,16 +150,16 @@ int main(int argc, char *argv[]){
         }
 
         int pid_v = quadros[vitima].pid;
-        int pag_v = quadros[vitima].pagina;
+        int pag_v = quadros[vitima].pag;
 
-        int idxv = buscar_processo(procs, num_procs, pid_v);
-        procs[idxv].tabela[pag_v].valid = 0;
+        int auxv = buscarProcesso(proc, num_proc, pid_v);
+        proc[auxv].tabela[pag_v].atual = 0;
 
         quadros[vitima].pid = pid;
-        quadros[vitima].pagina = pagina;
+        quadros[vitima].pag = pagina;
         quadros[vitima].rbit = 1;
 
-        p->tabela[pagina].valid = 1;
+        p->tabela[pagina].atual = 1;
         p->tabela[pagina].frame = vitima;
 
         printf("PAGE FAULT (substituiu quadro %d)\n", vitima);
@@ -162,10 +167,10 @@ int main(int argc, char *argv[]){
 
     fclose(fa);
 
-    printf("\n=== RESUMO ===\n");
+    printf("\nResultado: \n");
     printf("HITs: %d\n", hits);
     printf("PAGE FAULTs: %d\n", faults);
-    printf("SUBSTITUICOES: %d\n", subs);
+    printf("SUBS: %d\n", subs);
 
     return 0;
 }
