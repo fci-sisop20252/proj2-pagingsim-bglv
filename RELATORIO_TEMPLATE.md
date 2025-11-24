@@ -72,9 +72,10 @@ pag: número da página que sestá alocada no frame (dentro do pid)
 rbit: bit de referência do Clock
 int ocupado: indica se o frame está em uso (1)
 - Como rastreia frames livres vs ocupados?
-Utilizamos o array livres que armazena os índices dos frames disponíveis. Quando um frame é alocado, seu índice é removido do array.
+ A variável quadros_ocupados rastreia o número de frames em uso, e a variável proximo_livre rastreia o índice do próximo frame a ser alocado sequencialmente.
 - **Justificativa:** Por que escolheu essa abordagem?
-O array quadros oferece acesso rápido ao frame físico usando seu índice. O array livres fornece alocação de frame livre de forma eficiente.
+A abordagem com contadores é mais simples e permite alocar frames na ordem crescente, garantindo a ordem sequencial desejada pelo sistema de testes.
+
 **Estrutura para FIFO:**
 - Como mantém a ordem de chegada das páginas?
 A ordem é mantida implicitamente pelo índice do próximo frame a ser substituído, rastreado pela variável ponteiro_fifo.
