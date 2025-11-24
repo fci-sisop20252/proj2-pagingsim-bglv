@@ -77,12 +77,15 @@ int main(int argc, char *argv[]){
 
     Frame *quadros = calloc(num_quadros, sizeof(Frame));
 
-    int *livres = malloc(sizeof(int) * num_quadros);
-    int topo_livre = num_quadros;
+    //int *livres = malloc(sizeof(int) * num_quadros);
+    //int topo_livre = num_quadros;
 
-    for(int i = 0; i < num_quadros; i++){
-        livres[i] = i;
-    }
+    int proximo_livre = 0;
+    int quadros_ocupados = 0;
+    
+    //for(int i = 0; i < num_quadros; i++){
+        //livres[i] = i;
+    //}
     int clock = 0, hits = 0, faults = 0, subs = 0;
 
     FILE *fa = fopen(accesso, "r");
@@ -114,9 +117,14 @@ int main(int argc, char *argv[]){
 
         faults++;
 
-        if (topo_livre > 0) {
+        //if (topo_livre > 0) {
+        if (quadros_ocupados < num_quadros) {
 
-            int q = livres[--topo_livre];
+            int q = proximo_livre; // Frame a ser alocado (0, 1, 2...)
+            
+            proximo_livre++;
+            quadros_ocupados++;
+            //int q = livres[--topo_livre];
 
             quadros[q].ocupado = 1;
             quadros[q].pid = pid;
