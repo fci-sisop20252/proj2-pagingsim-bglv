@@ -150,12 +150,70 @@ Explique como seu código distingue e trata os dois cenários:
 
 **Cenário 1: Frame livre disponível**
 - Como identifica que há frame livre?
+  if (quadros_ocupados < num_quadros)
+  quadros_ocupados conta quantos frames já foram usados.
+  num_quadros é a quantidade total de frames.
+
 - Quais passos executa para alocar a página?
+Quando detecta que há frame livre, ele faz
+int q = proximo_livre;
+proximo_livre++;
+quadros_ocupados++;
+
+quadros[q].ocupado = 1;
+quadros[q].pid = pid;
+quadros[q].pag = pag;
+quadros[q].rbit = 1;
+
+Marca a página como estando naquele frame
+Coloca PID e número da página
+Seta rbit = 1 (Clock usa isso como "recentemente usado")
+
+p->tabela[pag].atual = 1;
+p->tabela[pag].frame = q;
+
+Marca a página como residente
+Diz qual frame ela ocupa
+Page fault logo
+faults++;
 
 **Cenário 2: Memória cheia (substituição)**
 - Como identifica que a memória está cheia?
+Logo após o teste do cenário 1, quando não passa no if:
+
+if (quadros_ocupados < num_quadros) {
+    ...
+}
+subs++;
+
 - Como decide qual algoritmo usar (FIFO vs Clock)?
+O programa verifica a string passada no argv:
+if (strcmp(algoritmo, "fifo") == 0)
+
+Se for "fifo" → usa FIFO
+Se não for "fifo", assume Clock → usa código do Clock.
+
 - Quais passos executa para substituir uma página?
+Supondo que vitima já está definida:
+
+Pega o processo e página da vítima:
+int pid_v = quadros[vitima].pid;
+int pag_v = quadros[vitima].pag;
+int auxv = buscarProcesso(proc, num_proc, pid_v);
+proc[auxv].tabela[pag_v].atual = 0;
+
+Sobrescreve o frame com os dados da nova página:
+quadros[vitima].pid = pid;
+quadros[vitima].pag = pag;
+quadros[vitima].rbit = 1;
+
+Atualiza a tabela de páginas do processo novo
+p->tabela[pag].atual = 1;
+p->tabela[pag].frame = vitima;
+
+Conta substituição e page fault
+faults++;
+subs++;
 
 ---
 
