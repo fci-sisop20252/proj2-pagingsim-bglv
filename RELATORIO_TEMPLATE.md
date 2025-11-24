@@ -85,7 +85,7 @@ A abordagem FIFO é a mais fácil. Um ponteiro circular no array de frames é us
 
 **Estrutura para Clock:**
 - Como implementou o ponteiro circular?
-Através da variável clock, que armazena o índice do frame a ser inspecionado. Ele é incrementado e mantido dentro dos limites do array de frames usando: clock = (clock + 1) % num_quadros;
+Através da variável clock, que armazena o índice do frame a ser inspecionado. Ele é incrementado e mantido dentro dos limites do array de frames usando: clock = (clock + 1) % num_quadros.
 - Como armazena e atualiza os R-bits?
 O R-bit é armazenado no campo rbit da estrutura Frame. Ele é setado pra 1 sempre que uma página chega no frame ou quando já está no frame e é acessada. Se o ponteiro clock inspeciona e o seu valor é 1, o algoritmo reseta para 0.
 - **Justificativa:** Por que escolheu essa abordagem?
@@ -96,8 +96,12 @@ Reutilizar o array de Frame e adicionar o campo rbit é a maneira mais direta de
 Descreva como organizou seu código:
 
 - Quantos arquivos/módulos criou?
+O código está organizado em um único arquivo (simulador.c).
 - Qual a responsabilidade de cada arquivo/módulo?
+Contém todas as estruturas de dados, as funções e o loop principal de simulação. É o módulo central que gerencia a memória virtual, traduz acessos e executa os algoritmos de substituição (FIFO e Clock).
 - Quais são as principais funções e o que cada uma faz?
+├── main() -  Lê argumentos, abre arquivos, inicializa estruturas (proc, quadros, livres), e executa o loop principal de simulação de acessos, chamando a função de busca e a lógica de tratamento de Page Faults/Substituição
+├──buscarProcesso() - Função auxiliar para localizar o índice de um processo no array proc a partir de um pid. Percorre o vetor de processos para encontrar e retornar o índice do processo que corresponde ao PID fornecido.
 
 **Exemplo:**
 ```
@@ -117,8 +121,11 @@ simulador.c
 Explique **como** implementou a lógica FIFO:
 
 - Como mantém o controle da ordem de chegada?
+O ponteiro_fifo aponta sempre para o primeiro frame que foi alocado quando a memória encheu (a página mais antiga).
 - Como seleciona a página vítima?
+A vítima é o índice apontado por ponteiro_fifo.
 - Quais passos executa ao substituir uma página?
+Guarda o índice do frame a ser substituído, avança o ponteiro circularmente, desaloja a página antiga (vítima), aloca a nova página e atualiza a Tabela de Páginas do Processo da nova página para atual.
 
 **Não cole código aqui.** Explique a lógica em linguagem natural.
 
@@ -127,10 +134,13 @@ Explique **como** implementou a lógica FIFO:
 Explique **como** implementou a lógica Clock:
 
 - Como gerencia o ponteiro circular?
+O ponteiro (clock) avança circularmente (% num_quadros) a cada inspeção, dando a impressão de um relógio.
 - Como implementou a "segunda chance"?
+O algortimo entra em loop até encontrar uma vítima. Se o frame atual inspecionado tem rbit == 1, significa que a página foi recentemente acessada, então o rbit é resetado para 0, e o ponteiro avança, dando à página uma "segunda chance".
 - Como trata o caso onde todas as páginas têm R=1?
+O ponteiro irá varrer todos os frames, resetando todos os R-bits para 0. Ao completar a volta, o ponteiro começará a inspecionar novamente, assim, o primeiro frame encontrado terá rbit = 0 e será escolhido como vítima.
 - Como garante que o R-bit é setado em todo acesso?
-
+O R-bit é setado para 1 em 2 momentos: HIT (Se a página procurada for encontrada na memória, o bit de referência daquele frame é setado) e Alocação (Seja em um frame livre ou após uma substituição, a página recém-alocada recebe o valor 1 em rbit, para garantir que ela não seja substituída imediatamente).
 **Não cole código aqui.** Explique a lógica em linguagem natural.
 
 ### 2.5 Tratamento de Page Fault
