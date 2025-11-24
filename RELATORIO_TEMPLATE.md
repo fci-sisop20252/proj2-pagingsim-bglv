@@ -54,25 +54,42 @@ Descreva as estruturas de dados que você escolheu para representar:
 
 **Tabela de Páginas:**
 - Qual estrutura usou? (array, lista, hash map, etc.)
+Array.
 - Quais informações armazena para cada página?
+int atual: indica se a página está na RAM (1) ou não (0).
+int frame: armazena o índice do frame na memória física onde está a página.
 - Como organizou para múltiplos processos?
+Cada processo possui um ponteiro (tabela) para seu próprio array em EntradaPagina, alocado dinamicamente.
 - **Justificativa:** Por que escolheu essa abordagem?
+O número da página é o offset dentro da tabela de páginas do processo, permitindo acesso rápido após a tradução do endereço virtual.
 
 **Frames Físicos:**
 - Como representou os frames da memória física?
+Por um array chamado Frame, alocado dinamicamente.
 - Quais informações armazena para cada frame?
+pid: id do processo alocado no frame
+pag: número da página que sestá alocada no frame (dentro do pid)
+rbit: bit de referência do Clock
+int ocupado: indica se o frame está em uso (1)
 - Como rastreia frames livres vs ocupados?
+Utilizamos o array livres que armazena os índices dos frames disponíveis. Quando um frame é alocado, seu índice é removido do array.
 - **Justificativa:** Por que escolheu essa abordagem?
-
+O array quadros oferece acesso rápido ao frame físico usando seu índice. O array livres fornece alocação de frame livre de forma eficiente.
 **Estrutura para FIFO:**
 - Como mantém a ordem de chegada das páginas?
+A ordem é mantida implicitamente pelo índice do próximo frame a ser substituído, rastreado pela variável ponteiro_fifo.
 - Como identifica a página mais antiga?
+A página mais antiga é a página que está sendo apontada pelo ponteiro_fifo.
 - **Justificativa:** Por que escolheu essa abordagem?
+A abordagem FIFO é a mais fácil. Um ponteiro circular no array de frames é usado para identificar a primeira a entrar e, portanto, a próxima a sair.
 
 **Estrutura para Clock:**
 - Como implementou o ponteiro circular?
+Através da variável clock, que armazena o índice do frame a ser inspecionado. Ele é incrementado e mantido dentro dos limites do array de frames usando: clock = (clock + 1) % num_quadros;
 - Como armazena e atualiza os R-bits?
+O R-bit é armazenado no campo rbit da estrutura Frame. Ele é setado pra 1 sempre que uma página chega no frame ou quando já está no frame e é acessada. Se o ponteiro clock inspeciona e o seu valor é 1, o algoritmo reseta para 0.
 - **Justificativa:** Por que escolheu essa abordagem?
+Reutilizar o array de Frame e adicionar o campo rbit é a maneira mais direta de dar às páginas uma "segunda chance" sem precisar mover entradas em uma fila ou lista.
 
 ### 2.2 Organização do Código
 
