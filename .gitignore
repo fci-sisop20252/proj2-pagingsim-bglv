@@ -28,9 +28,7 @@ core
 vgcore.*
 
 # Saídas de teste
-output*.txt
 test_output.txt
-saida_*.txt
 
 # Logs
 *.log
