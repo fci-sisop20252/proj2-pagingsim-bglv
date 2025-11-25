@@ -312,15 +312,15 @@ Confirme que o vídeo contém:
 
 Antes de submeter, verifique:
 
-- [ ] Código compila sem erros conforme instruções da seção 1.1
-- [ ] Simulador funciona corretamente com FIFO
-- [ ] Simulador funciona corretamente com Clock
-- [ ] Formato de saída segue EXATAMENTE a especificação do ENUNCIADO.md
-- [ ] Testamos com os casos fornecidos em tests/
-- [ ] Todas as seções deste relatório foram preenchidas
-- [ ] Análise comparativa foi realizada com dados reais
-- [ ] Vídeo de demonstração foi gravado e link está funcionando
-- [ ] Todos os integrantes participaram e concordam com a submissão
+- [ X ] Código compila sem erros conforme instruções da seção 1.1
+- [ X ] Simulador funciona corretamente com FIFO
+- [ X ] Simulador funciona corretamente com Clock
+- [ X ] Formato de saída segue EXATAMENTE a especificação do ENUNCIADO.md
+- [ X ] Testamos com os casos fornecidos em tests/
+- [ X ] Todas as seções deste relatório foram preenchidas
+- [ X ] Análise comparativa foi realizada com dados reais
+- [ X ] Vídeo de demonstração foi gravado e link está funcionando
+- [ X ] Todos os integrantes participaram e concordam com a submissão
 
 ---
 ## Referências
