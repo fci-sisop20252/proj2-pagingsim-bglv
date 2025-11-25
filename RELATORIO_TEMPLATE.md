@@ -293,18 +293,18 @@ o conceito da da aula que ficou mais calro de entender após a implementação f
 
 ## 5. Vídeo de Demonstração
 
-**Link do vídeo:** [Insira aqui o link para YouTube, Google Drive, etc.]
+**Link do vídeo:** [https://youtu.be/fVzZW19aq2g?si=7yCdH2CX36xdoDbQ ]
 
 ### Conteúdo do vídeo:
 
 Confirme que o vídeo contém:
 
-- [ ] Demonstração da compilação do projeto
-- [ ] Execução do simulador com algoritmo FIFO
-- [ ] Execução do simulador com algoritmo Clock
-- [ ] Explicação da saída produzida
-- [ ] Comparação dos resultados FIFO vs Clock
-- [ ] Breve explicação de uma decisão de design importante
+- [ X ] Demonstração da compilação do projeto
+- [ X ] Execução do simulador com algoritmo FIFO
+- [ X ] Execução do simulador com algoritmo Clock
+- [ X ] Explicação da saída produzida
+- [ X ] Comparação dos resultados FIFO vs Clock
+- [ X ] Breve explicação de uma decisão de design importante
 
 ---
 
