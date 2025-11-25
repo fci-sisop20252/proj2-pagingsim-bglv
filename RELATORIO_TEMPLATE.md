@@ -231,29 +231,35 @@ Preencha a tabela abaixo com os resultados de pelo menos 3 testes diferentes:
 
 | Descrição do Teste | Total de Acessos | Page Faults FIFO | Page Faults Clock | Diferença |
 |-------------------|------------------|------------------|-------------------|-----------|
-| Teste 1 - Básico  |                  |                  |                   |           |
-| Teste 2 - Memória Pequena |          |                  |                   |           |
-| Teste 3 - Simples |                  |                  |                   |           |
-| Teste Próprio 1   |                  |                  |                   |           |
+| Teste 1 - Básico  |         8         |        5          |         5          |      0     |
+| Teste 2 - Memória Pequena |     10     |        10          |      10             |       0    |
+| Teste 3 - Simples |       7           |           4       |         4          |     0      |
+| Teste Próprio 1   |       100           |         39         |      38             |     1      |
 
 ### 3.2 Análise
 
 Com base nos resultados acima, responda:
 
 1. **Qual algoritmo teve melhor desempenho (menos page faults)?**
+O algoritmo Clock teve o melhor desempenho, apresentando um page fault a menos no teste mais extenso, enquanto nos demais testes o resultado ficou empatado com o FIFO.
 
-2. **Por que você acha que isso aconteceu?** Considere:
+3. **Por que você acha que isso aconteceu?** Considere:
    - Como cada algoritmo escolhe a vítima
    - O papel do R-bit no Clock
    - O padrão de acesso dos testes
 
-3. **Em que situações Clock é melhor que FIFO?**
+Isso ocorreu porque o Clock utiliza o R-bit para identificar páginas usadas recentemente e evitar substituí-las, enquanto o FIFO simplesmente remove a página mais antiga sem considerar seu uso; no teste maior houve reutilização temporal suficiente para o Clock se beneficiar, enquanto nos outros testes essa vantagem não apareceu.
+
+4. **Em que situações Clock é melhor que FIFO?**
    - Dê exemplos de padrões de acesso onde Clock se beneficia
+    O Clock é melhor quando existe localidade temporal, ou seja, quando determinadas páginas são acessadas repetidamente em intervalos curtos.
 
-4. **Houve casos onde FIFO e Clock tiveram o mesmo resultado?**
+5. **Houve casos onde FIFO e Clock tiveram o mesmo resultado?**
    - Por que isso aconteceu?
+Sim, houve vários empates porque os padrões de acesso desses testes não apresentavam reutilização útil, ou a memória era pequena demais para que o R-bit fizesse diferença, fazendo com que ambos substituíssem as páginas na mesma ordem.
 
-5. **Qual algoritmo você escolheria para um sistema real e por quê?**
+6. **Qual algoritmo você escolheria para um sistema real e por quê?**
+Eu escolheria o algoritmo Clock, pois ele oferece melhor desempenho geral, reduz substituições desnecessárias e é uma implementação eficiente que se aproxima do comportamento do LRU com baixo custo e alta estabilidade.
 
 ---
 
