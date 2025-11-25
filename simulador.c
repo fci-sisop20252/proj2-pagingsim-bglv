@@ -174,7 +174,7 @@ int main(int argc, char *argv[]){
 
     fclose(fa);
 
-    printf("\n--- Simulação Finalizada (Algoritmo: %s)\n", algoritmo);
+    printf("--- Simulação Finalizada (Algoritmo: %s)\n", algoritmo);
     printf("Total de Acessos: %d\n", hits + faults);
     printf("Total de Page Faults: %d\n", faults);
 
