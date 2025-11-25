@@ -264,17 +264,24 @@ Com base nos resultados acima, responda:
 Descreva o maior desafio técnico que seu grupo enfrentou durante a implementação:
 
 - Qual foi o problema?
+O maior problema foi decidir por onde começar o processo. Apesar de eu entender o conceito, montar a estrutura (struct) e depois organizar o fluxo do processo foi um pouco mais difícil, especialmente na parte de chamar cada clock.
 - Como identificaram o problema?
+Identificamos o problema após testar várias vezes e o resultado continuar dando errado.
 - Como resolveram?
+Resolvemos consultando os slides das aulas, que ajudaram bastante a esclarecer o que estava causando o problema.
 - O que aprenderam com isso?
+Aprendemos a compreender melhor como funciona a paginação de memória e como os algoritmos de substituição de páginas com fifo e Clock que gerenciam as faltas de página de forma eficiente.
 
 ### 4.2 Principal Aprendizado
 
 Descreva o principal aprendizado sobre gerenciamento de memória que vocês tiveram com este projeto:
 
 - O que vocês não entendiam bem antes e agora entendem?
+O que não haviamos entendido muito bem como que os quadros funcionavam, mas que apóes realizar o projeto nos conseguimos entender.
 - Como este projeto mudou sua compreensão de memória virtual?
+Ele mudou a nossa compreensão de memória virtual ao mostrar vermos como o so decide substituir páginas, como ocorrem as faltas de página e como cada algoritmo impacta o desempenho.
 - Que conceito das aulas ficou mais claro após a implementação?
+o conceito da da aula que ficou mais calro de entender após a implementação foi a do clock
 
 ---
 
